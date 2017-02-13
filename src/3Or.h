@@ -1,9 +1,9 @@
-#ifndef AND_H   // remember to change file name
-#define AND_H
+#ifndef OR_H   // remember to change file name
+#define OR_H
 
 #include "Connector.h"  // remember to change file name before compiling
 
-class And : public Connector
+class Or : public Connector
 {
     protected:
         Component* leftChild;

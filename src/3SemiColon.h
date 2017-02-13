@@ -1,9 +1,9 @@
-#ifndef AND_H   // remember to change file name
-#define AND_H
+#ifndef SEMICOLON_H   // remember to change file name
+#define SEMICOLON_H
 
 #include "Connector.h"  // remember to change file name before compiling
 
-class And : public Connector
+class SemiColon : public Connector
 {
     protected:
         Component* leftChild;
