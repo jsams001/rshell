@@ -2,6 +2,7 @@
 #define SEMICOLON_H
 
 #include "Connector.h"  // remember to change file name before compiling
+using namespace std;
 
 class SemiColon : public Connector
 {
@@ -10,5 +11,8 @@ class SemiColon : public Connector
         Component* rightChild;
         
     public:
+        SemiColon(Component* left, Component* right);
         void run();
-}
+};
+
+#endif

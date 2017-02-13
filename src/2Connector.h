@@ -2,6 +2,7 @@
 #define CONNECTOR_H
 
 #include "Component.h" // remember to change file name before compiling
+using namespace std;
 
 class Connector : public Component
 {
@@ -10,6 +11,8 @@ class Connector : public Component
         Component* rightChild;
     
     public:
+        Connector();
+        Connector(Component* left, Component* right);
         virtual void run();
 }
 

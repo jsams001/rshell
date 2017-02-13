@@ -2,6 +2,7 @@
 #define OR_H
 
 #include "Connector.h"  // remember to change file name before compiling
+using namespace std;
 
 class Or : public Connector
 {
@@ -10,5 +11,8 @@ class Or : public Connector
         Component* rightChild;
         
     public:
+        Or(Component* left, Component* right);
         void run();
-}
+};
+
+#endif

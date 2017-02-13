@@ -2,6 +2,7 @@
 #define COMMAND_H
 
 #include Component.h    // remember to change file name before compiling
+using namespace std;
 
 class Command : public Component
 {
@@ -10,6 +11,7 @@ class Command : public Component
         bool cmdSucceed;
     
     public:
+        Command();
         void run();
 };
 
