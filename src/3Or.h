@@ -1,8 +1,8 @@
 #ifndef OR_H   // remember to change file name
 #define OR_H
 
-#include "Connector.h"  // remember to change file name before compiling
-using namespace std;
+#include "1Component.h"
+#include "2Connector.h"
 
 class Or : public Connector
 {
@@ -11,8 +11,9 @@ class Or : public Connector
         Component* rightChild;
         
     public:
+        Or();
         Or(Component* left, Component* right);
-        void run();
+        bool run();
 };
 
 #endif

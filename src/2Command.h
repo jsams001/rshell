@@ -1,18 +1,22 @@
 #ifndef COMMAND_H   // remember to change file name
 #define COMMAND_H
 
-#include Component.h    // remember to change file name before compiling
-using namespace std;
+#include <string>
+#include <vector>
+
+#include "1Component.h" 
 
 class Command : public Component
 {
-    private:
+    protected: 
         string userCommand;
-        bool cmdSucceed;
+        vector<char*> flags; // there may be multiple flags per command
     
     public:
         Command();
-        void run();
+        Command(string userCmd);
+        Command(string userCmd, vector<string> userFlags);
+        bool run();
 };
 
 #endif

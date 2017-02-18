@@ -1,8 +1,8 @@
 #ifndef SEMICOLON_H   // remember to change file name
 #define SEMICOLON_H
 
-#include "Connector.h"  // remember to change file name before compiling
-using namespace std;
+#include "1Component.h"
+#include "2Connector.h" 
 
 class SemiColon : public Connector
 {
@@ -11,8 +11,11 @@ class SemiColon : public Connector
         Component* rightChild;
         
     public:
+        SemiColon();
+        SemiColon(Component* left);
         SemiColon(Component* left, Component* right);
-        void run();
+        bool run();
+
 };
 
 #endif

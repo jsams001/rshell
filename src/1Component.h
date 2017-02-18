@@ -1,12 +1,13 @@
 #ifndef COMPONENT_H    // remember to change file name
 #define COMPONENT_H
 
+#include <iostream>
 using namespace std;
 
 class Component
 {
     public:
-        virtual void run() = 0;
+        virtual bool run() = 0;
 };
 
 #endif
