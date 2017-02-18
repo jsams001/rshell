@@ -148,10 +148,17 @@ Component* constructTree(const vector<string>& combinedCommands)
         }
         else if (combinedCommands.at(i) == ";") 
         {
-            Command* semiNewCommand = new Command(combinedCommands.at(i + 1));
-            SemiColon* newSemi = new SemiColon(reference, semiNewCommand);
-            reference = newSemi;
-            setRightChild = true;
+            if (i == combinedCommands.size() - 1)
+            {
+                SemiColon* oneChild = new SemiColon(reference);
+                reference = oneChild;
+            }
+            else {
+                Command* semiNewCommand = new Command(combinedCommands.at(i + 1));
+                SemiColon* newSemi = new SemiColon(reference, semiNewCommand);
+                reference = newSemi;
+                setRightChild = true;
+            }
         }
         else if (setRightChild)
         {
