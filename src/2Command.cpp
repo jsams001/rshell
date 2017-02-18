@@ -35,7 +35,8 @@ Command::Command(string userCmd) // constructor with only command as constructor
     }
 }
 
-Command::Command(string userCmd, vector<string> userFlags) // constructor with both command and flag
+Command::Command(string userCmd, vector<string> userFlags) // constructor with
+                                                        // both command and flag
 {
     this->userCommand = userCmd;
 
@@ -78,7 +79,8 @@ bool Command::run()
 			inputs[i] = flags[i - 1];
 		}
     }
-    inputs[this->flags.size() + 1] = NULL; // execvp() requires a char array terminated by a NULL pointer
+    inputs[this->flags.size() + 1] = NULL; // execvp() requires a char array  
+                                           //terminated by a NULL pointer
     
     /*cout << "inputs:" << endl;
     for (int i = 0; inputs[i] != NULL; ++i)
@@ -105,7 +107,8 @@ bool Command::run()
     else if (pid > 0) // parent pid is greater than 0
     {
         int status; // passed into waitpid
-        if (waitpid(pid, &status, 0) == -1) // waitpid forces parent to wait for child process
+        if (waitpid(pid, &status, 0) == -1) // waitpid forces parent to wait 
+                                            // for child process
         {
             perror("wait() has failed");
         }
