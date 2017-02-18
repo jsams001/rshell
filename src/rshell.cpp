@@ -40,7 +40,7 @@ void printCommandPrompt(bool &userInfoAvailable)
     cout << "$ ";
 }
 
-void ignoreComments(string &input) // Ignores any user input after the first "#".
+void ignoreComments(string &input) // Ignores any user input after the first "#"
 {
     size_t firstPound = input.find_first_of("#");
     if (firstPound != string::npos)
@@ -56,22 +56,16 @@ void parseInput(const string& input, vector<string>& separatedInput)
     
     char* parsedInput = strtok(c_strInput, " ");
     
-    while (parsedInput != NULL) // EX. input = echo A && echo B, separatedinput.at(0) == echo, separatedinput.at(1) == A
+    while (parsedInput != NULL) 
     { 
         string test = parsedInput;
         separatedInput.push_back(test);
         parsedInput = strtok(NULL, " ");
     }
-    
-    /*cout << "START OF SEPARATED VECTOR: " << endl; //This vector is confirmed to work correctly
-    for (unsigned int i = 0; i < separatedInput.size(); ++i) {
-        
-        cout << i << ": " << separatedInput.at(i) << endl;
-    }
-    cout << endl;*/
 }
 
-void combineCommands(const vector<string>& separatedInput, vector<string>& combinedCommands) 
+void combineCommands(const vector<string>& separatedInput, 
+                     vector<string>& combinedCommands) 
 {
     string change;
     
@@ -91,7 +85,8 @@ void combineCommands(const vector<string>& separatedInput, vector<string>& combi
             change.clear();
             combinedCommands.push_back(bar);
         }
-        else if (separatedInput.at(i).compare(separatedInput.at(i).size() - 1, 1, semi) == 0) {
+        else if (separatedInput.at(i).compare(separatedInput.at(i).size() - 1, 
+                                              1, semi) == 0) {
             change += separatedInput.at(i);
             change.erase(change.size() - 1, 1);
             combinedCommands.push_back(change);
@@ -108,13 +103,6 @@ void combineCommands(const vector<string>& separatedInput, vector<string>& combi
             change += " ";
         }
     }
-    
-    /*cout << endl << "START OF COMBINED VECTOR: " << endl; // This vector is confirmed to work correctly
-    for (unsigned int i = 0; i < combinedCommands.size(); ++i) {
-        
-        cout << i << ": " << combinedCommands.at(i) << endl;
-    }
-    cout << endl;*/
 }
 
 bool checkValidInput(const vector<string>& parsedInput) // IMPLEMENT LATER
@@ -122,13 +110,15 @@ bool checkValidInput(const vector<string>& parsedInput) // IMPLEMENT LATER
        
     if (parsedInput.front() == "&&" || parsedInput.front() == "||") 
     {
-        cout << "ERROR: INVALID INPUT - CAN'T BEGIN COMMAND LINE WITH AND/OR CONNECTOR " << endl;
+        cout << "ERROR: INVALID INPUT - ";
+        cout << "CAN'T BEGIN COMMAND LINE WITH AND/OR CONNECTOR " << endl;
         return false;
     }
     
     if (parsedInput.back() == "&&" || parsedInput.back() == "||") 
     {
-        cout << "ERROR: INVALID INPUT - CAN'T END COMMAND LINE WITH AND/OR CONNECTOR " << endl;
+        cout << "ERROR: INVALID INPUT - ";
+        cout << "CAN'T END COMMAND LINE WITH AND/OR CONNECTOR " << endl;
         return false;
     }
     
@@ -156,7 +146,7 @@ Component* constructTree(const vector<string>& combinedCommands)
             reference = newOr;
             setRightChild = true;
         }
-        else if (combinedCommands.at(i) == ";") // CHECK FOR CASE echo A; echo B
+        else if (combinedCommands.at(i) == ";") 
         {
             Command* semiNewCommand = new Command(combinedCommands.at(i + 1));
             SemiColon* newSemi = new SemiColon(reference, semiNewCommand);
@@ -180,9 +170,16 @@ Component* constructTree(const vector<string>& combinedCommands)
 int main()
 {
     string userInput;
-    bool userInfoAvailable = true; // Passed into printCommandPrompt so if user info is not available, the shell will not continue throwing errors.
-    vector<string> separatedInput; // Separate userInput by tokens and put them in separatedInput
-    vector<string> combinedCommands; // Combines the connectors with the commands 
+    
+    bool userInfoAvailable = true; // Passed into printCommandPrompt so if 
+                                    // user info is not available, the shell 
+                                    // will not continue throwing errors.
+                                    
+    vector<string> separatedInput; // Separate userInput 
+                                    // by tokens and put them in separatedInput
+                                    
+    vector<string> combinedCommands; // Reconstructs the commands and divides
+                                      // them by the connectors
     
     for (;;)
     {
@@ -190,18 +187,20 @@ int main()
         
         getline(cin, userInput);
         
-        ignoreComments(userInput); // Ignores any user input after the first "#".
+        ignoreComments(userInput); // Ignores any user input after the first "#"
         
         if (userInput.empty()) // returns if userinput has no commands
         {
             continue;
         }
         
-        parseInput(userInput, separatedInput); // Fills up vector with the different commands in the command line
+        // Fills up vector with the different commands in the command line
+        parseInput(userInput, separatedInput);
         
-        if (checkValidInput(separatedInput)) // If this wasn't here, out of bounds error could occur
+        // Prevents out of bounds error when combining commands
+        if (checkValidInput(separatedInput)) 
         {
-            combineCommands(separatedInput, combinedCommands); // Construct commands, keeps connectors separate
+            combineCommands(separatedInput, combinedCommands); 
             Component* head = constructTree(combinedCommands);
             head->run();
         }
