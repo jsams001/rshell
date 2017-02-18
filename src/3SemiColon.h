@@ -1,4 +1,4 @@
-#ifndef SEMICOLON_H   // remember to change file name
+#ifndef SEMICOLON_H   
 #define SEMICOLON_H
 
 #include "1Component.h"
