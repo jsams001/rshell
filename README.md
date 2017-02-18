@@ -7,14 +7,14 @@ which can be one single command, or multiple ones separated by any number of ope
 We used the executables in usr/bin/ to run these commands, and the connectors available 
 for the user to use are **;**, **&&**, **||**. The function of each unique character
 is defined below:
----
 
+---
 * ; - The command following this operator is always executed
 * && - The next command is run only if the preceding one succeeds
 * || - The next command is run only if the preceding one fails
 * # - Any input after this character is taken as a comment
-
 ---
+
 User can continue to input command lines until the unique input string is reached. Once
 this command is run, the program executes any commands that precedes it on the command line
 if present, then exits the program.
