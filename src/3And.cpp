@@ -1,9 +1,9 @@
 #include "1Component.h"
 #include "3And.h"
 
-And::And() {} // default constructor
+And::And() {} 
 
-And::And(Component* left, Component* right) // constructor with left and right children
+And::And(Component* left, Component* right) 
 {
     this->leftChild = left;
     this->rightChild = right;
