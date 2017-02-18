@@ -7,20 +7,27 @@ SemiColon::SemiColon(Component* left, Component* right)
 {
     this->leftChild = left;
     this->rightChild = right;
+    hasRightChild = true;
 }
 
 SemiColon::SemiColon(Component* left) // constructor with only left child
 {
     this->leftChild = left;
+    hasRightChild = false;
 }
 
 bool SemiColon::run()
 {
     this->leftChild->run();
     
-    if (this->rightChild->run())
-        return true;
-    else
-        return false;
+    if (hasRightChild)
+    {
+        if (this->rightChild->run())
+            return true;
+        else
+            return false;
+    }
+    
+    return true;
     
 }
