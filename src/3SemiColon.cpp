@@ -1,9 +1,9 @@
 #include "1Component.h"
 #include "3SemiColon.h"
 
-SemiColon::SemiColon() {} // default constructor
+SemiColon::SemiColon() {} 
 
-SemiColon::SemiColon(Component* left, Component* right) // constructor with left and right children
+SemiColon::SemiColon(Component* left, Component* right) 
 {
     this->leftChild = left;
     this->rightChild = right;
@@ -17,6 +17,7 @@ SemiColon::SemiColon(Component* left) // constructor with only left child
 bool SemiColon::run()
 {
     this->leftChild->run();
+    
     if (this->rightChild->run())
         return true;
     else
