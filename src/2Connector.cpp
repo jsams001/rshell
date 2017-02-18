@@ -1,9 +1,9 @@
 #include "1Component.h"
 #include "2Connector.h"
 
-Connector::Connector() {} // default constructor
+Connector::Connector() {} 
 
-Connector::Connector(Component* left, Component* right) // constructor with left and right children
+Connector::Connector(Component* left, Component* right) 
 {
     this->leftChild = left;
     this->rightChild = right;
