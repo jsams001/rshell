@@ -9,6 +9,7 @@ class SemiColon : public Connector
     protected:
         Component* leftChild;
         Component* rightChild;
+        bool hasRightChild;
         
     public:
         SemiColon();
