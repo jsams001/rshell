@@ -106,9 +106,3 @@ bool Command::run()
     
     return returnedVal;
 }
-
-/*void Command::print() 
-{
-    
-    cout << this->userCommand;
-}   */
