@@ -36,7 +36,7 @@ Command::Command(string userCmd) // constructor with only command as constructor
 }
 
 Command::Command(string userCmd, vector<string> userFlags) // constructor with
-                                                        // both command and flag
+                                                    // both command and flag
 {
     this->userCommand = userCmd;
 
@@ -57,23 +57,12 @@ bool Command::run()
     
     bool returnedVal = true;
     
-    /*cout << "userCommand: " << userCommand << endl;
-    for (int i = 0; i < flags.size(); ++i)
-    {
-        cout << "flags[" << i << "]: " << flags[i] << endl;
-    }*/
-    
     char* inputs[500];
     char* temp = new char[100];
     strcpy(temp, userCommand.c_str());
     inputs[0] = temp;
     if (flags.size() != 0)
     {
-    	/*cout << "flags:" << endl;
-    	for (int k = 0; k < flags.size(); ++k)
-    	{
-			cout << flags[k] << endl;
-		}*/
 		for (unsigned int i = 1; i <= flags.size(); ++i)
 		{
 			inputs[i] = flags[i - 1];
@@ -81,13 +70,7 @@ bool Command::run()
     }
     inputs[this->flags.size() + 1] = NULL; // execvp() requires a char array  
                                            //terminated by a NULL pointer
-    
-    /*cout << "inputs:" << endl;
-    for (int i = 0; inputs[i] != NULL; ++i)
-    {
-		cout << inputs[i] << endl;
-	}*/
-    
+                                           
     pid_t pid = fork();
     if (pid == -1) // this is for the case that fork fails
     {
