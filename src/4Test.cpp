@@ -94,7 +94,7 @@ bool Test::run()
         returnedVal = false; // false if path does not exist
     }
     
-    if (returnedVal)
+    if (returnedVal) // prints the required (True) or (False)
     {
         cout << "(True)" << endl;
     }
