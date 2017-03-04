@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <vector>
+#include <cstdlib>
 using namespace std;
 
 #include "1Component.h"
@@ -11,12 +12,13 @@ using namespace std;
 #include "3And.h"
 #include "3Or.h"
 #include "3SemiColon.h"
+#include "4Test.h"
 
 void printCommandPrompt(bool &userInfoAvailable)
 {
     if (userInfoAvailable)
     {
-        char* userName = getlogin();
+        char* userName = getlogin(); // gets user name
         if (userName == NULL)
         {
             perror("getlogin() failed");
@@ -24,7 +26,7 @@ void printCommandPrompt(bool &userInfoAvailable)
         }
     
         char hostName[256] = "/0";
-        gethostname(hostName, 256);
+        gethostname(hostName, 256); // gets host name
         if (hostName == NULL)
         {
             perror("gethostname() failed");
@@ -33,7 +35,7 @@ void printCommandPrompt(bool &userInfoAvailable)
         
         if (userInfoAvailable)
         {
-            cout << userName << "@" << hostName;
+            cout << "[" << userName << "@" << hostName << "]";
         }
     }
 
@@ -51,6 +53,7 @@ void ignoreComments(string &input) // Ignores any user input after the first "#"
 
 void parseInput(const string& input, vector<string>& separatedInput)
 {
+    unsigned int i = 0;
     char* c_strInput = new char[input.size() + 1];
     strcpy(c_strInput, input.c_str());
     
@@ -60,13 +63,18 @@ void parseInput(const string& input, vector<string>& separatedInput)
     { 
         string test = parsedInput;
         separatedInput.push_back(test);
+        
+        if (separatedInput.at(i).at(0) == '/')
+            separatedInput.at(i).erase(0, 1);
+        
         parsedInput = strtok(NULL, " ");
+        ++i;
     }
 }
 
 void combineCommands(const vector<string>& separatedInput, 
-                     vector<string>& combinedCommands) 
-{
+                 vector<string>& combinedCommands) 
+    {             
     string change;
     
     for (unsigned int i = 0; i < separatedInput.size(); ++i) 
@@ -74,31 +82,121 @@ void combineCommands(const vector<string>& separatedInput,
         string semi = ";";
         string amp = "&&";
         string bar = "||";
-        
-        if (separatedInput.at(i).compare(amp) == 0) {
-            combinedCommands.push_back(change);
-            change.clear();
+        string parenLeft = "(";
+        string parenRight = ")";
+        string testLeft = "[";
+        string testRight = "]";
+
+        if (separatedInput.at(i).compare(amp) == 0) 
+        {
+            if(!change.empty())
+            {
+                combinedCommands.push_back(change);
+                change.clear();
+            }
             combinedCommands.push_back(amp);
         }
-        else if (separatedInput.at(i).compare(bar) == 0) {
-            combinedCommands.push_back(change);
-            change.clear();
+        
+        else if (separatedInput.at(i).compare(bar) == 0) 
+        {
+            if(!change.empty())
+            {
+                combinedCommands.push_back(change);
+                change.clear();
+            }
             combinedCommands.push_back(bar);
         }
+        
         else if (separatedInput.at(i).compare(separatedInput.at(i).size() - 1, 
-                                              1, semi) == 0) {
-            change += separatedInput.at(i);
-            change.erase(change.size() - 1, 1);
-            combinedCommands.push_back(change);
+                                              1, semi) == 0) 
+        {
+            if (!change.empty())
+            {
+                change += separatedInput.at(i);
+                change.erase(change.size() - 1, 1);
+                combinedCommands.push_back(change);
+                change.clear();
+            }
             combinedCommands.push_back(semi);
-            change.clear();
         }
-        else if (i == separatedInput.size() - 1) {
+        
+        else if (separatedInput.at(i).compare(0, 1, parenLeft) == 0)
+        {
+            bool parenEnd = false;
+            bool semiEnd = false;
+            while (!semiEnd && !parenEnd)
+            {
+                if (separatedInput.at(i).compare(separatedInput.at(i).size() - 1,
+                                                    1, parenRight) == 0)
+                    parenEnd = true;
+                if (separatedInput.at(i).compare(separatedInput.at(i).size() - 1, 
+                                                    1, semi) == 0)
+                    semiEnd = true;
+                if (!semiEnd && !parenEnd) 
+                {
+                    change += separatedInput.at(i);
+                    change += " ";
+                    i++;
+                }
+            }
+            if (parenEnd)
+            {
+                change += separatedInput.at(i);
+                combinedCommands.push_back(change);
+                change.clear();
+            }
+            else if(semiEnd)
+            {
+                change += separatedInput.at(i);
+                change.erase(change.size() - 1, 1);
+                combinedCommands.push_back(change);
+                combinedCommands.push_back(semi);
+                change.clear();
+            }
+        }
+        
+        else if (separatedInput.at(i) == testLeft)
+        {
+            bool checkForTestRight = false; // checks for right bracket
+            unsigned testRightPos;
+            
+            for (unsigned k = i; k < separatedInput.size(); ++k) 
+            {
+                if (separatedInput.at(k) == testRight)
+                {
+                    checkForTestRight = true;
+                    testRightPos = k;
+                } 
+            }
+            if (!checkForTestRight)
+            {
+                cout << "Must either input right bracket or put spaces between"
+                     << " brackets." << endl;
+                
+                combinedCommands.pop_back();
+                break;
+            }
+            
+            for (unsigned j = i; j <= testRightPos; ++j)
+            {   
+                change += separatedInput.at(j);
+                change += " ";
+            }
+            //change += separatedInput.at(i);
+            combinedCommands.push_back(change);
+            change.clear();
+            i += testRightPos - i;
+        }
+        
+        else if (i == separatedInput.size() - 1) 
+        {
             change += separatedInput.at(i);
             combinedCommands.push_back(change);
             change.clear();
         }
-        else {
+        
+        else 
+        {
             change += separatedInput.at(i);
             change += " ";
         }
@@ -127,24 +225,111 @@ bool checkValidInput(const vector<string>& parsedInput) // IMPLEMENT LATER
 
 Component* constructTree(const vector<string>& combinedCommands) 
 {
-    Component* reference;
+    
+    Component* reference; // used to set tree nodes
     bool setRightChild = false;
+    
+    string create; // string used for removing parentheses
+    vector<string>pSeparateElement; // used for separating precedence commands
+    vector<string>pCombinedCommands; 
     
     for (unsigned int i = 0; i < combinedCommands.size(); ++i) 
     {
-        if (combinedCommands.at(i) == "&&")
+        if (setRightChild)
+            setRightChild = false;
+        else if (combinedCommands.at(i) == "&&")
         {
-            Command* andNewCommand = new Command(combinedCommands.at(i + 1));
-            And* newAnd = new And(reference, andNewCommand);
-            reference = newAnd;
-            setRightChild = true;
+            if (combinedCommands.at(i + 1).at(0) == '(')
+            {
+                create = combinedCommands.at(i + 1);
+                create = create.substr(1, create.size() - 2);
+                parseInput(create, pSeparateElement);
+                combineCommands(pSeparateElement, pCombinedCommands);
+                And* newAndParen = new And(reference,constructTree(pCombinedCommands));
+                reference = newAndParen;
+                pSeparateElement.clear();
+                pCombinedCommands.clear();
+                setRightChild = true;
+            }
+            else    // this is for making commands right children of connectors
+            {
+                if (combinedCommands.at(i + 1).find("test") == 0)
+                {
+                    Test* rightTest = new Test(combinedCommands.at(i + 1));
+                    And* newAnd = new And(reference, rightTest);
+                    reference = newAnd;
+                }
+                else if (combinedCommands.at(i + 1).at(0) == '[')
+                {
+                    string tempCmd = "test";
+                
+                    for (unsigned k = 1; 
+                         combinedCommands.at(i + 1).at(k) != ']'; ++k)
+                    {
+                        tempCmd += combinedCommands.at(i + 1).at(k);
+                    }
+
+                    Test* rightTest = new Test(tempCmd);
+                    And* newAnd = new And(reference, rightTest);
+                    reference = newAnd;
+                }
+                else
+                {
+                    Command* rightCommand = 
+                    new Command(combinedCommands.at(i + 1));
+                    
+                    And* newAnd = new And(reference, rightCommand);
+                    reference = newAnd;
+                }
+                setRightChild = true;
+            }
         }
         else if (combinedCommands.at(i) == "||")
         {
-            Command* orNewCommand = new Command(combinedCommands.at(i + 1));
-            Or* newOr = new Or(reference, orNewCommand);
-            reference = newOr;
-            setRightChild = true;
+            if (combinedCommands.at(i + 1).at(0) == '(')
+            {
+                create = combinedCommands.at(i + 1);
+                create = create.substr(1, create.size() - 2);
+                parseInput(create, pSeparateElement);
+                combineCommands(pSeparateElement, pCombinedCommands);
+                Or* newOrParen = new Or(reference,constructTree(pCombinedCommands));
+                reference = newOrParen;
+                pSeparateElement.clear();
+                pCombinedCommands.clear();
+                setRightChild = true;
+            }
+            else    // this is for making commands right children of connectors
+            {
+                if (combinedCommands.at(i + 1).find("test") == 0)
+                {
+                    Test* rightTest = new Test(combinedCommands.at(i + 1));
+                    Or* newOr = new Or(reference, rightTest);
+                    reference = newOr;
+                }
+                else if (combinedCommands.at(i + 1).at(0) == '[')
+                {
+                    string tempCmd = "test";
+                
+                    for (unsigned k = 1; 
+                         combinedCommands.at(i + 1).at(k) != ']'; ++k)
+                    {
+                        tempCmd += combinedCommands.at(i + 1).at(k);
+                    }
+
+                    Test* rightTest = new Test(tempCmd);
+                    Or* newOr = new Or(reference, rightTest);
+                    reference = newOr;
+                }
+                else
+                {
+                    Command* rightCommand = 
+                    new Command(combinedCommands.at(i + 1));
+                    
+                    Or* newOr = new Or(reference, rightCommand);
+                    reference = newOr;
+                }
+                setRightChild = true;
+            }
         }
         else if (combinedCommands.at(i) == ";") 
         {
@@ -153,21 +338,86 @@ Component* constructTree(const vector<string>& combinedCommands)
                 SemiColon* oneChild = new SemiColon(reference);
                 reference = oneChild;
             }
-            else {
-                Command* semiNewCommand = new Command(combinedCommands.at(i + 1));
-                SemiColon* newSemi = new SemiColon(reference, semiNewCommand);
-                reference = newSemi;
+            else if (combinedCommands.at(i + 1).at(0) == '(')
+            {
+                create = combinedCommands.at(i + 1);
+                create = create.substr(1, create.size() - 2);
+                parseInput(create, pSeparateElement);
+                combineCommands(pSeparateElement, pCombinedCommands);
+                SemiColon* newSemiParen = 
+                    new SemiColon(reference,constructTree(pCombinedCommands));
+                reference = newSemiParen;
+                pSeparateElement.clear();
+                pCombinedCommands.clear();
+                setRightChild = true;
+            }
+            else    // this is for making commands right children of connectors
+            {
+                if (combinedCommands.at(i + 1).find("test") == 0)
+                {
+                    Test* rightTest = new Test(combinedCommands.at(i + 1));
+                    SemiColon* newSemi = new SemiColon(reference, rightTest);
+                    reference = newSemi;
+                }
+                else if (combinedCommands.at(i + 1).at(0) == '[')
+                {
+                    string tempCmd = "test";
+                
+                    for (unsigned k = 1; 
+                         combinedCommands.at(i + 1).at(k) != ']'; ++k)
+                    {
+                        tempCmd += combinedCommands.at(i + 1).at(k);
+                    }
+
+                    Test* rightTest = new Test(tempCmd);
+                    SemiColon* newSemi = new SemiColon(reference, rightTest);
+                    reference = newSemi;
+                }
+                else
+                {
+                    Command* rightCommand = 
+                    new Command(combinedCommands.at(i + 1));
+                    
+                    SemiColon* newSemi = new SemiColon(reference, rightCommand);
+                    reference = newSemi;
+                }
                 setRightChild = true;
             }
         }
-        else if (setRightChild)
+        else if (combinedCommands.at(i).at(0) == '(')
         {
-            setRightChild = false;
+            create = combinedCommands.at(i);
+            create = create.substr(1, create.size() - 2);
+            parseInput(create, pSeparateElement);
+            combineCommands(pSeparateElement, pCombinedCommands);
+            reference = constructTree(pCombinedCommands);
+            pSeparateElement.clear();
+            pCombinedCommands.clear();
         }
-        else 
+        else    // sets new command
         {
-            Command* newCommand = new Command(combinedCommands.at(i));
-            reference = newCommand;
+            if (combinedCommands.at(i).find("test") == 0)
+            {
+                Test* newTest = new Test(combinedCommands.at(i));
+                reference = newTest;
+            }
+            else if (combinedCommands.at(i).at(0) == '[')  // checks for test
+            {
+                string tempCmd = "test";
+                
+                for (unsigned k = 1; combinedCommands.at(i).at(k) != ']'; ++k)
+                {
+                    tempCmd += combinedCommands.at(i).at(k);
+                }
+
+                Test* newTest = new Test(tempCmd);
+                reference = newTest;
+            }
+            else
+            {
+                Command* newCommand = new Command(combinedCommands.at(i));
+                reference = newCommand;
+            }
         }
     }
     
@@ -207,14 +457,13 @@ int main()
         // Prevents out of bounds error when combining commands
         if (checkValidInput(separatedInput)) 
         {
-            combineCommands(separatedInput, combinedCommands); 
+            combineCommands(separatedInput, combinedCommands);
             Component* head = constructTree(combinedCommands);
-            head->run();
+            head->run(); 
         }
         
         separatedInput.clear();
         combinedCommands.clear();
-        
     }
     
     return 0;
