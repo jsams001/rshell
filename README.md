@@ -35,4 +35,3 @@ last characters the user inputs. Due to the way our vector is constructed,
 this is so an out of range won't occur during the runtime of the program. 
 If this occurs, user is prompted for commands once again. Strongly suggested to 
 start every command line with an actual command to avoid similar errors.
-
