@@ -32,9 +32,6 @@ bool OutAppRedirect::run()
         return false;
     }
     
-    cout << inputFD << endl;
-    cout << outputFD << endl;
-    
     this->leftChild->setFD(inputFD, newFd);
     
     if (this->leftChild->run())
