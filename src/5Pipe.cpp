@@ -21,7 +21,7 @@ Pipe::Pipe(Component* left, Component* right)
 bool Pipe::run()
 {
     int pipefd[2];
-    bool truth;
+    bool check;
 
     if (pipe(pipefd) == -1) {
         perror("pipe");
@@ -29,9 +29,9 @@ bool Pipe::run()
     }    
     
     leftChild->setFD(inputFD, pipefd[1]);
-    truth = leftChild->run();
+    check = leftChild->run();
     
-    if (truth == false) { 
+    if (check == false) { 
         return false;
     }
      
@@ -41,13 +41,13 @@ bool Pipe::run()
     }
     
     rightChild->setFD(pipefd[0], outputFD);
-    truth = rightChild->run();
+    check = rightChild->run();
     if (close(pipefd[0]) == -1) {
         perror("close");
         return false;
     }
 
-    if (truth == false) {
+    if (check == false) {
        return false;
     }
     
