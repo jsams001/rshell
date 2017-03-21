@@ -1,4 +1,3 @@
-#include "1Component.h"
 #include "3SemiColon.h"
 
 SemiColon::SemiColon() {} 
@@ -30,4 +29,20 @@ bool SemiColon::run()
     
     return true;
     
+}
+
+string SemiColon::getUserCommand()
+{
+    return "";
+}
+void SemiColon::setFD(int in, int out) {}
+
+int SemiColon::getInputFD()
+{
+    return 0;
+}
+
+int SemiColon::getOutputFD()
+{
+    return 0;
 }

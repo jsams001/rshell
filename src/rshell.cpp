@@ -13,6 +13,10 @@ using namespace std;
 #include "3Or.h"
 #include "3SemiColon.h"
 #include "4Test.h"
+#include "5Pipe.h"
+#include "5InRedirect.h"
+#include "5OutRedirect.h"
+#include "5OutAppRedirect.h"
 
 void printCommandPrompt(bool &userInfoAvailable)
 {
@@ -86,6 +90,10 @@ void combineCommands(const vector<string>& separatedInput,
         string parenRight = ")";
         string testLeft = "[";
         string testRight = "]";
+        string pipe = "|";
+        string input = "<";
+        string output1 = ">";
+        string output2 = ">>";
 
         if (separatedInput.at(i).compare(amp) == 0) 
         {
@@ -105,6 +113,46 @@ void combineCommands(const vector<string>& separatedInput,
                 change.clear();
             }
             combinedCommands.push_back(bar);
+        }
+        
+        else if (separatedInput.at(i).compare(pipe) == 0) 
+        {
+            if(!change.empty())
+            {
+                combinedCommands.push_back(change);
+                change.clear();
+            }
+            combinedCommands.push_back(pipe);
+        }
+        
+        else if (separatedInput.at(i).compare(input) == 0) 
+        {
+            if(!change.empty())
+            {
+                combinedCommands.push_back(change);
+                change.clear();
+            }
+            combinedCommands.push_back(input);
+        }
+        
+        else if (separatedInput.at(i).compare(output1) == 0) 
+        {
+            if(!change.empty())
+            {
+                combinedCommands.push_back(change);
+                change.clear();
+            }
+            combinedCommands.push_back(output1);
+        }
+        
+        else if (separatedInput.at(i).compare(output2) == 0) 
+        {
+            if(!change.empty())
+            {
+                combinedCommands.push_back(change);
+                change.clear();
+            }
+            combinedCommands.push_back(output2);
         }
         
         else if (separatedInput.at(i).compare(separatedInput.at(i).size() - 1, 
@@ -237,6 +285,173 @@ Component* constructTree(const vector<string>& combinedCommands)
     {
         if (setRightChild)
             setRightChild = false;
+            
+        else if (combinedCommands.at(i) == "|") 
+        {
+            Command* rightCommand = 
+            new Command(combinedCommands.at(i + 1));
+            Pipe* newPipe = new Pipe(reference, rightCommand);
+            reference = newPipe;
+            setRightChild = true;
+        }
+        
+        else if (combinedCommands.at(i) == "<") 
+        {
+            
+            if (combinedCommands.at(i + 1).at(0) == '(')
+            {
+                create = combinedCommands.at(i + 1);
+                create = create.substr(1, create.size() - 2);
+                parseInput(create, pSeparateElement);
+                combineCommands(pSeparateElement, pCombinedCommands);
+                InRedirect* newInReParen = new InRedirect(reference, 
+                                              constructTree(pCombinedCommands));
+                reference = newInReParen;
+                pSeparateElement.clear();
+                pCombinedCommands.clear();
+                setRightChild = true;
+            }
+            else    // this is for making commands right children of connectors
+            {
+                if (combinedCommands.at(i + 1).find("test") == 0)
+                {
+                    Test* rightTest = new Test(combinedCommands.at(i + 1));
+                    InRedirect* newInRe = new InRedirect(reference, rightTest);
+                    reference = newInRe;
+                }
+                else if (combinedCommands.at(i + 1).at(0) == '[')
+                {
+                    string tempCmd = "test";
+                
+                    for (unsigned k = 1; 
+                         combinedCommands.at(i + 1).at(k) != ']'; ++k)
+                    {
+                        tempCmd += combinedCommands.at(i + 1).at(k);
+                    }
+
+                    Test* rightTest = new Test(tempCmd);
+                    InRedirect* newInRe = new InRedirect(reference, rightTest);
+                    reference = newInRe;
+                }
+                else
+                {
+                    Command* rightCommand = 
+                    new Command(combinedCommands.at(i + 1));
+                    
+                    InRedirect* newInRe = new InRedirect(reference, 
+                                                        rightCommand);
+                    
+                    reference = newInRe;
+                    
+                }
+                setRightChild = true;
+            }
+        }
+        
+        else if (combinedCommands.at(i) == ">") 
+        {
+            
+            if (combinedCommands.at(i + 1).at(0) == '(')
+            {
+                create = combinedCommands.at(i + 1);
+                create = create.substr(1, create.size() - 2);
+                parseInput(create, pSeparateElement);
+                combineCommands(pSeparateElement, pCombinedCommands);
+                OutRedirect* newOutReParen = new OutRedirect(reference, 
+                                              constructTree(pCombinedCommands));
+                reference = newOutReParen;
+                pSeparateElement.clear();
+                pCombinedCommands.clear();
+                setRightChild = true;
+            }
+            else    // this is for making commands right children of connectors
+            {
+                if (combinedCommands.at(i + 1).find("test") == 0)
+                {
+                    Test* rightTest = new Test(combinedCommands.at(i + 1));
+                    OutRedirect* newOutRe = new OutRedirect(reference, rightTest);
+                    reference = newOutRe;
+                }
+                else if (combinedCommands.at(i + 1).at(0) == '[')
+                {
+                    string tempCmd = "test";
+                
+                    for (unsigned k = 1; 
+                         combinedCommands.at(i + 1).at(k) != ']'; ++k)
+                    {
+                        tempCmd += combinedCommands.at(i + 1).at(k);
+                    }
+
+                    Test* rightTest = new Test(tempCmd);
+                    OutRedirect* newOutRe = new OutRedirect(reference, rightTest);
+                    reference = newOutRe;
+                }
+                else
+                {
+                    Command* rightCommand = 
+                    new Command(combinedCommands.at(i + 1));
+                    
+                    OutRedirect* newOutRe = new OutRedirect(reference, 
+                                                        rightCommand);
+                    reference = newOutRe;
+                }
+                setRightChild = true;
+            }
+        }
+        
+        else if (combinedCommands.at(i) == ">>") 
+        {
+            
+            if (combinedCommands.at(i + 1).at(0) == '(')
+            {
+                create = combinedCommands.at(i + 1);
+                create = create.substr(1, create.size() - 2);
+                parseInput(create, pSeparateElement);
+                combineCommands(pSeparateElement, pCombinedCommands);
+                OutAppRedirect* newOutAppReParen = new OutAppRedirect(reference, 
+                                              constructTree(pCombinedCommands));
+                reference = newOutAppReParen;
+                pSeparateElement.clear();
+                pCombinedCommands.clear();
+                setRightChild = true;
+            }
+            else    // this is for making commands right children of connectors
+            {
+                if (combinedCommands.at(i + 1).find("test") == 0)
+                {
+                    Test* rightTest = new Test(combinedCommands.at(i + 1));
+                    OutAppRedirect* newOutAppRe = new OutAppRedirect(reference, 
+                                                                rightTest);
+                    reference = newOutAppRe;
+                }
+                else if (combinedCommands.at(i + 1).at(0) == '[')
+                {
+                    string tempCmd = "test";
+                
+                    for (unsigned k = 1; 
+                         combinedCommands.at(i + 1).at(k) != ']'; ++k)
+                    {
+                        tempCmd += combinedCommands.at(i + 1).at(k);
+                    }
+
+                    Test* rightTest = new Test(tempCmd);
+                    OutAppRedirect* newOutAppRe = new OutAppRedirect(reference, 
+                                                                    rightTest);
+                    reference = newOutAppRe;
+                }
+                else
+                {
+                    Command* rightCommand = 
+                    new Command(combinedCommands.at(i + 1));
+                    
+                    OutAppRedirect* newOutAppRe = new OutAppRedirect(reference, 
+                                                        rightCommand);
+                    reference = newOutAppRe;
+                }
+                setRightChild = true;
+            }
+        }
+        
         else if (combinedCommands.at(i) == "&&")
         {
             if (combinedCommands.at(i + 1).at(0) == '(')
@@ -277,13 +492,13 @@ Component* constructTree(const vector<string>& combinedCommands)
                 {
                     Command* rightCommand = 
                     new Command(combinedCommands.at(i + 1));
-                    
                     And* newAnd = new And(reference, rightCommand);
                     reference = newAnd;
                 }
                 setRightChild = true;
             }
         }
+        
         else if (combinedCommands.at(i) == "||")
         {
             if (combinedCommands.at(i + 1).at(0) == '(')
@@ -324,13 +539,13 @@ Component* constructTree(const vector<string>& combinedCommands)
                 {
                     Command* rightCommand = 
                     new Command(combinedCommands.at(i + 1));
-                    
                     Or* newOr = new Or(reference, rightCommand);
                     reference = newOr;
                 }
                 setRightChild = true;
             }
         }
+        
         else if (combinedCommands.at(i) == ";") 
         {
             if (i == combinedCommands.size() - 1)
@@ -384,6 +599,7 @@ Component* constructTree(const vector<string>& combinedCommands)
                 setRightChild = true;
             }
         }
+        
         else if (combinedCommands.at(i).at(0) == '(')
         {
             create = combinedCommands.at(i);
@@ -394,6 +610,7 @@ Component* constructTree(const vector<string>& combinedCommands)
             pSeparateElement.clear();
             pCombinedCommands.clear();
         }
+        
         else    // sets new command
         {
             if (combinedCommands.at(i).find("test") == 0)

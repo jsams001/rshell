@@ -1,4 +1,3 @@
-#include "1Component.h"
 #include "3And.h"
 
 And::And() {} 
@@ -20,4 +19,21 @@ bool And::run()
     }
     
     return false;
+}
+
+string And::getUserCommand()
+{
+    return "";
+}
+    
+void And::setFD(int in, int out) {}
+
+int And::getInputFD()
+{
+    return 0;
+}
+
+int And::getOutputFD()
+{
+    return 0;
 }

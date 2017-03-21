@@ -1,4 +1,3 @@
-#include "1Component.h"
 #include "3Or.h"
 
 Or::Or() {} 
@@ -27,4 +26,20 @@ bool Or::run()
         return true;
     }
     return false;
+}
+
+string Or::getUserCommand()
+{
+    return "";
+}
+void Or::setFD(int in, int out) {}
+
+int Or::getInputFD()
+{
+    return 0;
+}
+
+int Or::getOutputFD()
+{
+    return 0;
 }

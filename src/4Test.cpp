@@ -103,5 +103,23 @@ bool Test::run()
         cout << "(False)" << endl;
     }
     
+    cout << endl;
+    
     return returnedVal;
+}
+
+string Test::getUserCommand()
+{
+    return "";
+}
+void Test::setFD(int in, int out) {}
+
+int Test::getInputFD()
+{
+    return 0;
+}
+
+int Test::getOutputFD()
+{
+    return 0;
 }
