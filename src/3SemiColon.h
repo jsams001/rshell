@@ -10,6 +10,8 @@ class SemiColon : public Connector
         Component* leftChild;
         Component* rightChild;
         bool hasRightChild;
+        int inputFD;
+        int outputFD;
         
     public:
         SemiColon();

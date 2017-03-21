@@ -9,6 +9,8 @@ class And : public Connector
     protected:
         Component* leftChild;
         Component* rightChild;
+        int inputFD;
+        int outputFD;
         
     public:
         And();

@@ -6,6 +6,9 @@ using namespace std;
 
 class Component
 {
+    private:
+        int inputFD;
+        int outputFD;
     public:
         virtual bool run() = 0;
         virtual string getUserCommand() = 0;

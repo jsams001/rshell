@@ -8,6 +8,8 @@ class Connector : public Component
     protected:
         Component* leftChild;
         Component* rightChild;
+        int inputFD;
+        int outputFD;
     
     public:
         Connector();
