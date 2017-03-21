@@ -9,10 +9,11 @@ and the connectors available for the user to use are **;**, **&&**, **||**. The
 function of each unique character is defined below:
 
 ---
-* ; - The command following this operator is always executed
-* && - The next command is run only if the preceding one succeeds
-* || - The next command is run only if the preceding one fails
-* # - Any input after this character is taken as a comment
+*; - The command following this operator is always executed
+*&& - The next command is run only if the preceding one succeeds
+*|| - The next command is run only if the preceding one fails
+*# - Any input after this character is taken as a comment
+
 ---
 
 User can continue to input command lines until the unique input string is 
