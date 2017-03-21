@@ -31,9 +31,6 @@ bool InRedirect::run()
         return false;
     }
     
-    // cout << inputFD << endl; used for error checking
-    // cout << outputFD << endl;
-    
     this->leftChild->setFD(newFD, outputFD); // sets the file 
                                                    // descriptors for left child
                                      // to match the new FD from open

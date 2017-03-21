@@ -43,7 +43,11 @@ string OutRedirect::getUserCommand()
     return "";
 }
 
-void OutRedirect::setFD(int in, int out) {}
+void OutRedirect::setFD(int in, int out)
+{
+    inputFD = in;
+    outputFD = out;
+}
 
 int OutRedirect::getInputFD()
 {

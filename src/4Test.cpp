@@ -11,6 +11,8 @@ Test::Test() {} // default constructor
 
 Test::Test(string userCmd) // constructor with only raw user input
 {
+    this->inputFD = 0;
+    this->outputFD = 1;
     size_t found = userCmd.find(" ");
     
     if (found == string::npos)
@@ -36,6 +38,8 @@ Test::Test(string userCmd) // constructor with only raw user input
 
 Test::Test(string userCmd, vector<string> userFlags) // constructor with flags
 {                                                    // and command
+    this->inputFD = 0;
+    this->outputFD = 1;
     this->userCommand = userCmd;
 
     for (unsigned int i = 0; i < userFlags.size(); ++i)
@@ -112,7 +116,11 @@ string Test::getUserCommand()
 {
     return "";
 }
-void Test::setFD(int in, int out) {}
+void Test::setFD(int in, int out)
+{
+    inputFD = in;
+    outputFD = out;
+}
 
 int Test::getInputFD()
 {
