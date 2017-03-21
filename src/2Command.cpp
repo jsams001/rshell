@@ -8,10 +8,17 @@
 #include <unistd.h>
 #include "2Command.h"
 
-Command::Command() {} // default constructor
+Command::Command() // default constructor
+{
+    this->inputFD = 0;  // default stdin file descriptor
+    this->outputFD = 1; // default stdout file descriptor
+} 
 
 Command::Command(string userCmd) // constructor with only command as constructor
 {
+    this->inputFD = 0;  // default stdin file descriptor
+    this->outputFD = 1; // default stdout file descriptor
+    
     size_t found = userCmd.find(" ");
     
     if (found == string::npos)
@@ -38,6 +45,8 @@ Command::Command(string userCmd) // constructor with only command as constructor
 Command::Command(string userCmd, vector<string> userFlags) // constructor with
                                                     // both command and flag
 {
+    this->inputFD = 0;  // default stdin file descriptor
+    this->outputFD = 1; // default stdout file descriptor
     this->userCommand = userCmd;
 
     for (unsigned int i = 0; i < userFlags.size(); ++i)
@@ -80,7 +89,20 @@ bool Command::run()
     }
     else if (pid == 0) // child pid is 0
     {
-        if (execvp(userCommand.c_str(), inputs) == -1)
+        if (dup2(inputFD, STDIN_FILENO) == -1)  // change input FD
+        {
+            returnedVal = false;
+            perror("dup2() has failed");
+            exit(EXIT_FAILURE);
+        }
+        if (dup2(outputFD, STDOUT_FILENO) == -1) // change output FD
+        {
+            returnedVal = false;
+            perror("dup2() has failed");
+            exit(EXIT_FAILURE);
+        }
+        
+        if (execvp(userCommand.c_str(), inputs) == -1)  // use execvp
         {
             returnedVal = false;
             perror("execvp() has failed");
@@ -104,5 +126,28 @@ bool Command::run()
         }
     }
     
+    //cout << endl;
+    
     return returnedVal;
+}
+
+void Command::setFD(int in, int out)
+{
+    this->inputFD = in;
+    this->outputFD = out;
+}
+
+string Command::getUserCommand()
+{
+    return this->userCommand;
+}
+
+int Command::getInputFD()
+{
+    return this->inputFD;
+}
+
+int Command::getOutputFD()
+{
+    return this-> outputFD;
 }
