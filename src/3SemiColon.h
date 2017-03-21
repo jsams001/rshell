@@ -16,7 +16,10 @@ class SemiColon : public Connector
         SemiColon(Component* left);
         SemiColon(Component* left, Component* right);
         bool run();
-
+        string getUserCommand();
+        void setFD(int in, int out);
+        int getOutputFD();
+        int getInputFD();
 };
 
 #endif

@@ -14,6 +14,10 @@ class Or : public Connector
         Or();
         Or(Component* left, Component* right);
         bool run();
+        string getUserCommand();
+        void setFD(int in, int out);
+        int getOutputFD();
+        int getInputFD();
 };
 
 #endif
